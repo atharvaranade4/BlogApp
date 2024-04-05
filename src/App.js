@@ -9,7 +9,7 @@ import Single from "./pages/single/Single"
 import Write from "./pages/write/Write"
 
 function App() {
-  const user = true;
+  const user = false;
   return (
   <>
     <TopBar/>
