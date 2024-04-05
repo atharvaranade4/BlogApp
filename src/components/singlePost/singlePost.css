@@ -17,8 +17,8 @@
 .singlePostTitle {
   text-align: center;
   margin: 10px;
+  font-family: "Varela Round", sans-serif;
   font-size: 28px;
-  font-family: "Lora", sans-serif;
 }
 
 .singlePostEdit {
@@ -34,8 +34,9 @@
 .singlePostIcon:first-child {
   color: teal;
 }
+
 .singlePostIcon:last-child {
-  color: tomato;
+  color: tomato
 }
 
 .singlePostInfo {
@@ -43,22 +44,18 @@
   display: flex;
   justify-content: space-between;
   font-size: 16px;
-  color: #be9656;
-  font-family: "Varela Round", Arial, Helvetica, sans-serif;
-}
-
-.singlePostAuthor{
-  margin-left: 5px;
+  color: grey;
+  font-family: "Varela Round", sans-serif;
 }
 
 .singlePostDesc {
-  color: #666;
+  color: grey;
   font-size: 18px;
   line-height: 25px;
 }
 
-.singlePostDesc::first-letter {
+.singlePostDesc::first-letter{
   margin-left: 20px;
+  font-weight: 600px;
   font-size: 30px;
-  font-weight: 600;
 }

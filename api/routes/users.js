@@ -63,4 +63,14 @@ router.get("/:id", async(req, res) => {
   }
 })
 
+// GET ALL USERs
+router.get("/", async(req, res) => {
+  try {
+    const user = await User.find()
+    res.status(200).json(user)
+  } catch(e) {
+    res.status(500).json(e)
+  }
+})
+
 module.exports = router;

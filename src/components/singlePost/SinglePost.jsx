@@ -1,64 +1,69 @@
-import { Link } from "react-router-dom";
-import "./singlePost.css";
+import { useEffect, useState } from 'react'
+import './singlePost.css'
+import axios from "axios"
+import { useLocation } from 'react-router'
+import { Link } from 'react-router-dom'
 
 export default function SinglePost() {
-  return (
-    <div className="singlePost">
+  const location = useLocation()
+
+  // Get post _id
+  const path = location.pathname.split("/")[2]
+  console.log(path)
+  const [post, setPost] = useState({})
+
+  useEffect(() => {
+    const getPost = async () => {
+      const res = await axios.get("http://localhost:5000/api/posts/" + path)
+      setPost(res.data)
+    }
+    getPost()
+  }, [path])
+
+  // USING FETCH instead of AXIOS
+  
+  //   useEffect(() => {    
+  //     let url = `http://localhost:5000/api/posts/${path}`
+  //     console.log(url)
+  //     fetch(url) 
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       setPost(data)
+  //     })
+  //     .catch((error) =>{
+  //     console.log(error)
+  //     })
+  // }, [path])
+
+  return (    
+    <div className='singlePost'>
       <div className="singlePostWrapper">
-        <img
-          className="singlePostImg"
-          src="https://images.pexels.com/photos/6685428/pexels-photo-6685428.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+        { post.photo && (
+          <img 
+          className='singlePostImg'
+          src = {post.photo}
           alt=""
-        />
+          />
+        )}
         <h1 className="singlePostTitle">
-          Lorem ipsum dolor
-          <div className="singlePostEdit">
-            <i className="singlePostIcon far fa-edit"></i>
-            <i className="singlePostIcon far fa-trash-alt"></i>
-          </div>
+          {post.title}
         </h1>
-        <div className="singlePostInfo">
-          <span>
-            Author:
-            <b className="singlePostAuthor">
-              <Link className="link" to="/posts?username=Safak">
-                Safak
-              </Link>
-            </b>
-          </span>
-          <span>1 day ago</span>
+        <div className="singlePostEdit">
+          <i className="singlePostIcon fa-regular fa-pen-to-square"></i>
+          <i className="singlePostIcon fa-solid fa-trash"></i>
         </div>
-        <p className="singlePostDesc">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iste error
-          quibusdam ipsa quis quidem doloribus eos, dolore ea iusto impedit!
-          Voluptatum necessitatibus eum beatae, adipisci voluptas a odit modi
-          eos! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iste
-          error quibusdam ipsa quis quidem doloribus eos, dolore ea iusto
-          impedit! Voluptatum necessitatibus eum beatae, adipisci voluptas a
-          odit modi eos! Lorem, ipsum dolor sit amet consectetur adipisicing
-          elit. Iste error quibusdam ipsa quis quidem doloribus eos, dolore ea
-          iusto impedit! Voluptatum necessitatibus eum beatae, adipisci voluptas
-          a odit modi eos! Lorem, ipsum dolor sit amet consectetur adipisicing
-          elit. Iste error quibusdam ipsa quis quidem doloribus eos, dolore ea
-          iusto impedit! Voluptatum necessitatibus eum beatae, adipisci voluptas
-          a odit modi eos! Lorem, ipsum dolor sit amet consectetur adipisicing
-          elit. Iste error quibusdam ipsa quis quidem doloribus eos, dolore ea
-          iusto impedit! Voluptatum necessitatibus eum beatae, adipisci voluptas
-          a odit modi eos!
-          <br />
-          <br />
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iste error
-          quibusdam ipsa quis quidem doloribus eos, dolore ea iusto impedit!
-          Voluptatum necessitatibus eum beatae, adipisci voluptas a odit modi
-          eos! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iste
-          error quibusdam ipsa quis quidem doloribus eos, dolore ea iusto
-          impedit! Voluptatum necessitatibus eum beatae, adipisci voluptas a
-          odit modi eos! Lorem, ipsum dolor sit amet consectetur adipisicing
-          elit. Iste error quibusdam ipsa quis quidem doloribus eos, dolore ea
-          iusto impedit! Voluptatum necessitatibus eum beatae, adipisci voluptas
-          a odit modi eos! Lorem, ipsum dolor sit amet consectetur.
+        <div className="singlePostInfo">
+          <span className='singlePostAuthor'>Author:
+            <Link to={`/?user=${post.username}`} className='Link'>            
+              <b>{post.username}</b>
+            </Link>
+          </span>
+          <span className='singlePostDate'>{new Date(post.createdAt).toDateString()}</span>
+        </div>
+        <p className='singlePostDesc'>
+          {post.desc}
         </p>
       </div>
     </div>
-  );
+  )
 }
