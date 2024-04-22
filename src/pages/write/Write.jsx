@@ -9,31 +9,41 @@ export default function Write() {
   const [file, setFile] = useState(null)
   const {user} = useContext(Context)
 
+  // console.log(file)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newPost = {
-      username: user.username,
-      title,
-      desc,
-    };
-    if(file) {
-      const data = new FormData()
-      const filename = Date.now() + file.name;
-      data.append("name", filename)
-      data.append("file", file)
-      newPost.photo = filename
-      try {
-        await axios.post("http://localhost:5000/api/upload", data)
-      } catch(e) {
 
-      }
+    if (!file) {
+      alert("Please select an image.");
+      return;
     }
-    try {
-      const res = await axios.post("http://localhost:5000/api/posts", newPost)
-      window.location.replace("/post/" + res.data._id)
-    } catch (e){}
+    
+    const formData = new FormData();
+    console.log("Title:", title);
+    console.log("Desc:", desc);
+    console.log("User:", user);
+    
+    formData.append("title", title);
+    formData.append("desc", desc);
+    formData.append("username", user.username);
+    formData.append("blogImage", file);
 
-  }
+    console.log("FORMDATA", Object.fromEntries(formData.entries()));
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/posts", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(res.data);
+      window.location.replace("/post/" + res.data._id);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  };
+  
   return (
     <div className="write">
       { file && 

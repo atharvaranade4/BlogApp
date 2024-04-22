@@ -9,48 +9,57 @@ export default function SinglePost() {
   const location = useLocation();
   const path = location.pathname.split("/")[2];
   const [post, setPost] = useState({});
-  const PF = "http://localhost:5000/images/";
   const { user } = useContext(Context);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [updateMode, setUpdateMode] = useState(false);
+  const [image, setImage] = useState(""); // Image data
 
   useEffect(() => {
     const getPost = async () => {
-      const res = await axios.get("http://localhost:5000/api/posts/" + path);
-      setPost(res.data);
-      setTitle(res.data.title);
-      setDesc(res.data.desc);
+      try {
+        const res = await axios.get("/api/posts/" + path);
+        setPost(res.data);
+        setTitle(res.data.title);
+        setDesc(res.data.desc);
+        // Set image data
+        setImage(res.data.blogImage ? `data:${res.data.blogImage.contentType};base64,${res.data.blogImage.data}` : "");
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
     };
     getPost();
   }, [path]);
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${post._id}`, {
+      await axios.delete(`/api/posts/${post._id}`, {
         data: { username: user.username },
       });
       window.location.replace("/");
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error deleting post:", err);
+    }
   };
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/posts/${post._id}`, {
+      await axios.put(`/api/posts/${post._id}`, {
         username: user.username,
         title,
         desc,
       });
-      setUpdateMode(false)
-    } catch (err) {}
+      setUpdateMode(false);
+    } catch (err) {
+      console.error("Error updating post:", err);
+    }
   };
 
   return (
     <div className="singlePost">
       <div className="singlePostWrapper">
-        {post.photo && (
-          <img src={PF + post.photo} alt="" className="singlePostImg" />
-        )}
+        {/* Display image */}
+        {image && <img src={image} alt="post" className="singlePostImg" />}
         {updateMode ? (
           <input
             type="text"

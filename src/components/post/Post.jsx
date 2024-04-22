@@ -3,14 +3,14 @@ import { Link } from "react-router-dom"
 import PropTypes from 'prop-types';
 
 export default function Post({post}) {
-  const PF = "http://localhost:5000/images/";
-  return (
+
+   return (
     <div className='post'>
-      {post.photo && (
+      {post.blogImage && (
         <img 
-        className='postImg'
-        src={PF + post.photo}
-        alt=''
+          className='postImg'
+          src={`data:${post.blogImage.contentType};base64,${post.blogImage.data}`}
+          alt=''
         />
       )}
       <div className="postInfo">
