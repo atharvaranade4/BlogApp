@@ -2,9 +2,16 @@ const router = require("express").Router();
 const User = require("../models/User")
 const Post = require("../models/Post")
 const bcrypt = require("bcrypt")
+const multer = require("multer");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // UPDATE
-router.put("/:id", async(req,res) => {
+router.put("/:id", upload.single("profileImage"), async(req,res) => {
+  console.log(req.body)
+  console.log(req.file) // Check if the file is received correctly
+
   if(req.body.userId === req.params.id) {
     if(req.body.password) {
         const salt = await bcrypt.genSalt(10)
@@ -13,7 +20,15 @@ router.put("/:id", async(req,res) => {
       try{
         const updatedUser = await User.findByIdAndUpdate(
           req.params.id, 
-          {$set: req.body},
+          {
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
+            profileImage: {
+              data: req.file.buffer.toString("base64"),
+              contentType: req.file.mimetype
+            }
+          },
           {new:true}
         );
         res.status(200).json(updatedUser)

@@ -1,16 +1,24 @@
 import { Link } from "react-router-dom";
 import "./topbar.css";
 import { Context } from '../../context/Context'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import axios from "axios";
 
 export default function Topbar() {
-  const PF = "http://localhost:5000/images/"
   const { user, dispatch } = useContext(Context)
+  const [image, setImage] = useState("")
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
   }
 
+  useEffect(() => {
+    const getUser = async () => {
+      const res = await axios.get("/api/users/" + user._id)
+      setImage(res.data.profileImage ? `data:${res.data.profileImage.contentType};base64,${res.data.profileImage.data}` : "");
+    }
+    getUser()
+  })
   return (
     <div className="top">
       <div className="topLeft">
@@ -37,7 +45,7 @@ export default function Topbar() {
           <Link className="link" to="/settings">
             <img
               className="topImg"
-              src={PF+user.profilePic}
+              src={image}
               alt=""
             />
           </Link>

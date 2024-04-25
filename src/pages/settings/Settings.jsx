@@ -1,6 +1,6 @@
 import "./settings.css";
 import Sidebar from "../../components/sideBar/Sidebar";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Context } from "../../context/Context";
 import axios from "axios";
 
@@ -10,37 +10,48 @@ export default function Settings() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
+  const [image, setImage] = useState("")
 
   const { user, dispatch } = useContext(Context);
-  const PF = "http://localhost:5000/images/"
+
+  useEffect(() => {
+    const getUser = async () => {
+      const res = await axios.get("/api/users/" + user._id)
+      setImage(res.data.profileImage
+        ? `data:${res.data.profileImage.contentType};base64,${res.data.profileImage.data}`
+        : ""
+      );
+    }
+    getUser()
+  })
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: "UPDATE_START" });
-    const updatedUser = {
-      userId: user._id,
-      username,
-      email,
-      password,
-    };
-    if (file) {
-      const data = new FormData();
-      const filename = Date.now() + file.name;
-      data.append("name", filename);
-      data.append("file", file);
-      updatedUser.profilePic = filename;
-      try {
-        await axios.post("http://localhost:5000/api/upload", data);
-      } catch (err) {}
-    }
+
+    const formData = new FormData();
+    formData.append("userId", user._id);
+    formData.append("username", user.username);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("profileImage", file);
+
+    console.log("FORMDATA", Object.fromEntries(formData.entries()));
+  
     try {
-      const res = await axios.put("http://localhost:5000/api/users/" + user._id, updatedUser);
+      const res = await axios.put("api/users/" + user._id, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(res.data)
       setSuccess(true);
       dispatch({ type: "UPDATE_SUCCESS", payload: res.data });
     } catch (err) {
       dispatch({ type: "UPDATE_FAILURE" });
     }
   };
+
   return (
     <div className="settings">
       <div className="settingsWrapper">
@@ -52,7 +63,7 @@ export default function Settings() {
           <label>Profile Picture</label>
           <div className="settingsPP">
             <img
-              src={file ? URL.createObjectURL(file) : PF+user.profilePic}
+              src={file ? URL.createObjectURL(file) : image}
               alt=""
             />
             <label htmlFor="fileInput">
@@ -94,7 +105,7 @@ export default function Settings() {
           )}
         </form>
       </div>
-      <Sidebar />
+      {/* <Sidebar /> */}
     </div>
   );
 }

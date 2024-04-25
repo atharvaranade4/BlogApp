@@ -14,14 +14,16 @@ export default function Register() {
     e.preventDefault();
     setError(false)
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", {
+      const response = await axios.post("api/auth/register", {
         username,
         email,
         password
       });
       console.log(response)
       console.log(window.location)
-      response.data && window.location.replace("/login")
+      if (response.status === 200) {
+        window.location.replace("/login");
+      }
       // history.push("/BlogApp/login");
     } catch(e) {
       console.log(e)

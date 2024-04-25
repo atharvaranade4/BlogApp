@@ -32,7 +32,7 @@ export default function Home() {
         <Posts 
           posts={posts}  
         />
-        <Sidebar />
+        {/* <Sidebar /> */}
       </div>
     </>
   )
