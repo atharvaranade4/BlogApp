@@ -13,12 +13,19 @@ export default function Topbar() {
   }
 
   useEffect(() => {
-    const getUser = async () => {
-      const res = await axios.get("/api/users/" + user._id)
-      setImage(res.data.profileImage ? `data:${res.data.profileImage.contentType};base64,${res.data.profileImage.data}` : "");
+    if (user) {
+      const getUser = async () => {
+        try {
+          const res = await axios.get("/api/users/" + user._id)
+          setImage(res.data.profileImage ? `data:${res.data.profileImage.contentType};base64,${res.data.profileImage.data}` : "");
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      }
+      getUser();
     }
-    getUser()
-  })
+  }, [user])
+
   return (
     <div className="top">
       <div className="topLeft">
@@ -34,10 +41,8 @@ export default function Topbar() {
               HOME
             </Link>
           </li>
-          <li className="topListItem"><Link className="link" to="/">ABOUT</Link></li>
-                <li className="topListItem"><Link className="link" to="/">CONTACT</Link></li>
-                <li className="topListItem"><Link className="link" to="/write">WRITE</Link></li>
-                {user && <li className="topListItem" onClick={handleLogout}>LOGOUT</li>}
+          <li className="topListItem"><Link className="link" to="/write">WRITE</Link></li>
+          {user && <li className="topListItem" onClick={handleLogout}>LOGOUT</li>}
         </ul>
       </div>
       <div className="topRight">

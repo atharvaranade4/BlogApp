@@ -17,7 +17,7 @@ export default function Home() {
     const fetchPosts = async () => {
       try {
         const res = await axios.get("/api/posts" + search)
-        console.log(res)
+        // console.log(res)
         setPosts(res.data)
       } catch (error) {
         console.error("Error fetching posts:", error)
@@ -32,8 +32,8 @@ export default function Home() {
         <Posts 
           posts={posts}  
         />
-        {/* <Sidebar /> */}
       </div>
+        <Sidebar />
     </>
   )
 }

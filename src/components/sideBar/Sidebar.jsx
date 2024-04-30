@@ -1,49 +1,58 @@
-import { useEffect, useState } from 'react'
-import axios from "axios"
-import './sidebar.css'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
-export default function Sidebar() {
-  const [cats, setCats] = useState([]);
+import UserCard from "../UserCard/UserCard";
+
+function App() {
+  const [users, setUsers] = useState([]);
+  const [usersWithImage, setUsersWithImage] = useState([]);
+  const [usersWithoutImage, setUsersWithoutImage] = useState([]);
+  const [images, setImages] = useState([]); // Image data
 
   useEffect(() => {
-    const getCats = async () => {
-      const res = await axios.get("/api/categories/")
-      // console.log(res.data)
-      setCats(res.data)
-    }
-    getCats()
-  }, [])
+    const getUsers = async () => {
+      try {
+        const res = await axios.get("/api/users");
+        setUsers(res.data);
+        console.log(users)
+
+        // Filter users with and without images
+        const usersWithImg = res.data.filter(user => user.profileImage && user.profileImage.data !== '');
+        const usersWithoutImg = res.data.filter(user => !user.profileImage || !user.profileImage.data);
+
+        // Set users with and without images
+        setUsersWithImage(usersWithImg);
+        setUsersWithoutImage(usersWithoutImg);
+
+        // Set image data
+        const imageData = usersWithImg.map(user => `data:image/png;base64,${user.profileImage.data}`);
+        setImages(imageData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    getUsers();
+  }, []);
+
   return (
-    <div className='sidebar'>
-      <div className="sidebarItem">
-        <div className="sidebarTitle">ABOUT ME</div>
-        <img 
-          src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-          alt=""
-        />
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe dolor expedita consequatu</p>
+    <div>
+      <h1>Contributors</h1>
+      <div className="user-list">
+        {usersWithImage.map(user => (
+          <UserCard key={user._id} user={user} />
+        ))}
       </div>
 
-      <div className="sidebarItem">
-        <span className="sidebarTitle">CATEGORIES</span>
-        <ul className="sidebarList">
-          {cats.map((cat, index) => (
-            <Link key={index} to={`/?cat=${cat.name}`} className='link'>
-              <li className='sidebarListItem'>{cat.name}</li>
-            </Link>
-          ))}
-        </ul>
-      </div>  
-
-      <div className="sidebarItem">
-        <span className="sidebarTitle">FOLLOW US</span>
-        <div className="sidebarSocial">
-          <i className="sidebarIcon fa-brands fa-square-facebook"></i>
-          <i className="sidebarIcon fa-brands fa-square-instagram"></i>
-          <i className="sidebarIcon fa-brands fa-square-pinterest"></i>
-        </div>
+      <div>
+        {usersWithoutImage.map((user, index) => (
+        <Link key={index} to={`/?user=${user.username}`} className="link">
+          <div key={user._id}>{user.username}</div>
+        </Link>
+        ))}
       </div>
     </div>
-  )
+  );
 }
+
+export default App;

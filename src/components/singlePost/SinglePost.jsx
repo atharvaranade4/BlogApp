@@ -20,6 +20,7 @@ export default function SinglePost() {
       try {
         const res = await axios.get("/api/posts/" + path);
         setPost(res.data);
+        console.log(post)
         setTitle(res.data.title);
         setDesc(res.data.desc);
         // Set image data
